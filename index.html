@@ -296,7 +296,7 @@
         let textColor = localStorage.getItem('textColor') || '#FFFFFF';
         let reminderTime = localStorage.getItem('reminderTime') || '23:00';
 
-        const UNLOCK_THRESHOLD = 10; // Unlocks a country every 10 clicks
+        const UNLOCK_THRESHOLD = 50; // Unlocks a country every 50 clicks
         let allCountryIds = []; // Will be populated dynamically by D3
 
         const dailyDisplay = document.getElementById('dailyDisplay');
