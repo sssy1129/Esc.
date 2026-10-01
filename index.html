@@ -37,6 +37,16 @@
         body.en .zh-text { display: none !important; }
         body.zh .en-text { display: none !important; }
 
+        /* 隱藏 number input 預設的上下滑桿/箭頭 */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
         /* 視圖容器 */
         .view-wrapper {
             position: relative;
@@ -124,7 +134,15 @@
             font-size: 8rem;
             font-weight: 700;
             line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .daily-fund {
+            font-size: 1.2rem;
+            font-weight: 500;
+            opacity: 0.8;
             margin-bottom: 30px;
+            letter-spacing: 1px;
         }
 
         .actions {
@@ -249,7 +267,7 @@
             background: none;
         }
         
-        .lang-select , .number-input{
+        .lang-select, .number-input, .box-btn{
             background: var(--bg-color);
             color: var(--text-color);
             border: 1px solid var(--text-color);
@@ -257,6 +275,7 @@
             border-radius: 8px;
             font-size: 0.9rem;
             outline: none;
+            font-family: inherit;
         }
 
         .number-input {
@@ -264,18 +283,21 @@
             text-align: center;
         }
 
-        .tutorial-btn {
-            border: 1px solid var(--text-color);
-            background: transparent;
-            color: var(--text-color);
-            border-radius: 8px;
-            padding: 6px 15px;
-            font-size: 0.85rem;
+        /* 故事、教學小卡按鈕 */
+        .box-btn {
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            width: 70px;
+            text-align: center;
+        }
+
+        .box-btn:active {
+            opacity: 0.6;
         }
 
         .reset-all-btn {
             width: 200px;
-            margin: 0 auto 30px auto;
+            margin: 0 auto 15px auto;
             display: block;
             padding: 12px;
             border-radius: 12px;
@@ -287,11 +309,20 @@
             text-align: center;
         }
 
-        /* 教學小卡 Modal */
-        .tutorial-overlay {
+        /* 開發者署名 */
+        .developer-credit {
+            text-align: center;
+            font-size: 0.6rem;
+            letter-spacing: 1px;
+            opacity: 0.5;
+            margin-bottom: 25px;
+        }
+
+        /* 通用彈窗 Overlay */
+        .modal-overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -299,35 +330,175 @@
             pointer-events: none;
             transition: opacity 0.3s ease;
             z-index: 100;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(6px);
         }
-        .tutorial-overlay.active {
+        .modal-overlay.active {
             opacity: 1;
             pointer-events: auto;
         }
-        .tutorial-card {
+
+        .modal-card {
             background: var(--bg-color);
             border: 1px solid var(--text-color);
-            border-radius: 15px;
-            padding: 25px 20px;
-            width: 85%;
-            max-width: 320px;
+            border-radius: 18px;
+            padding: 20px;
+            width: 88%;
+            max-width: 340px;
             transform: translateY(20px);
             transition: transform 0.3s ease;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            max-height: 80vh;
         }
-        .tutorial-overlay.active .tutorial-card {
+        .modal-overlay.active .modal-card {
             transform: translateY(0);
         }
-        .tutorial-card h3 {
-            margin-top: 0;
+
+        .modal-card h3 {
+            margin: 0;
             text-align: center;
             font-size: 1.1rem;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            padding-bottom: 15px;
-            margin-bottom: 15px;
-            line-height: 1.4;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+            flex-shrink: 0;
         }
+
+        .close-btn {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid var(--text-color);
+            color: var(--text-color);
+            font-weight: 600;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* 聊天室專屬樣式 */
+        .chat-header {
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+        .chat-header-name {
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+        .chat-header-sub {
+            font-size: 0.7rem;
+            opacity: 0.6;
+            margin-top: 2px;
+        }
+
+        .chat-page {
+            display: none;
+            flex-direction: column;
+            height: 400px;
+            gap: 12px;
+            padding: 5px 2px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        .chat-page.active-page {
+            display: flex;
+        }
+
+        .chat-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            width: 100%;
+        }
+        .chat-row.other {
+            justify-content: flex-start;
+        }
+        .chat-row.me {
+            justify-content: flex-end;
+        }
+
+        .chat-avatar {
+            font-size: 1.3rem;
+            line-height: 1;
+            user-select: none;
+        }
+
+        .chat-bubble {
+            max-width: 72%;
+            padding: 9px 13px;
+            font-size: 0.85rem;
+            line-height: 1.45;
+            word-break: break-word;
+        }
+
+        /* 對方的訊息框 - 置左 */
+        .chat-row.other .chat-bubble {
+            background: rgba(255, 255, 255, 0.12);
+            color: var(--text-color);
+            border-radius: 14px 14px 14px 4px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* 我的訊息框 - 置右 */
+        .chat-row.me .chat-bubble {
+            background: var(--text-color);
+            color: var(--bg-color);
+            font-weight: 500;
+            border-radius: 14px 14px 4px 14px;
+        }
+
+        /* 聊天室分頁按鈕 */
+        .chat-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px auto 5px auto;
+            width: 140px;
+            position: relative;
+            height: 28px;
+            flex-shrink: 0;
+        }
+        .page-center {
+            font-size: 0.8rem;
+            opacity: 0.75;
+            letter-spacing: 1px;
+            font-variant-numeric: tabular-nums;
+            text-align: center;
+        }
+        .page-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            -webkit-tap-highlight-color: transparent;
+            opacity: 0.85;
+            transition: opacity 0.2s;
+            z-index: 10;
+        }
+        .page-btn:active {
+            opacity: 0.4;
+        }
+        .page-btn.prev {
+            left: 8px;  /* 靠中偏左 */
+        }
+        .page-btn.next {
+            right: 8px; /* 靠中偏右 */
+        }
+
+        /* 教學小卡步驟樣式 */
         .tutorial-step {
             margin-bottom: 15px;
             font-size: 0.85rem;
@@ -340,17 +511,6 @@
             font-size: 0.95rem;
             opacity: 1;
         }
-        .close-btn {
-            width: 100%;
-            margin-top: 20px;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 1rem;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid var(--text-color);
-            color: var(--text-color);
-            font-weight: 600;
-        }
     </style>
 </head>
 <body class="en">
@@ -361,7 +521,12 @@
             <div class="header">I don't want to be here!!!</div>
             <div class="main-display">
                 <div class="count" id="dailyDisplay">0</div>
+                <div class="daily-fund">
+                    <span class="en-text">Today: $</span>
+                    <span class="zh-text">今日需存：$</span><span id="dailyFundDisplay">0</span>
+                </div>
             </div>
+            
             <div class="actions">
                 <button class="action-btn btn-small" onclick="updateCount(-1)">-</button>
                 <button class="action-btn btn-large" onclick="updateCount(1)">+1</button>
@@ -461,18 +626,35 @@
                         <span class="en-text">Daily Notification</span>
                         <span class="zh-text">每日通知</span>
                     </span>
-                    <button class="tutorial-btn" onclick="showTutorial()">
+                    <button class="box-btn" onclick="showModal('tutorialModal')">
                         <span class="en-text">Tutorial</span>
                         <span class="zh-text">教學</span>
                     </button>
                 </div>
+
+                <!-- 開發初衷/對話故事 -->
+                <div class="setting-row">
+                    <span>
+                        <span class="en-text">About & How to Use</span>
+                        <span class="zh-text">關於 & 如何使用</span>
+                    </span>
+                    <button class="box-btn" onclick="showModal('chatModal')">
+                        <span class="en-text">Read</span>
+                        <span class="zh-text">閱讀</span>
+                    </button>
+                </div>
             </div>
-            
+
             <!-- 置中雙重確認刪除按鈕 -->
             <button class="reset-all-btn" onclick="hardReset()">
                 <span class="en-text">RESET ALL DATA</span>
                 <span class="zh-text">重置所有紀錄</span>
             </button>
+
+            <!-- 開發者署名 -->
+            <div class="developer-credit">
+                Designed by LynnL2001
+            </div>
         </div>
     </div>
 
@@ -483,9 +665,118 @@
         <button class="nav-tab" id="tab-settings" onclick="switchTab('settings')">⚙️</button>
     </div>
 
+    <!-- 聊天室對話小卡 -->
+    <div class="modal-overlay" id="chatModal">
+        <div class="modal-card">
+            <!-- 聊天對象頂端資訊 -->
+            <div class="chat-header">
+                <div class="chat-header-name">
+                    <span class="en-text">Cassie🐶</span>
+                    <span class="zh-text">Cassie🐶</span>
+                </div>
+            </div>
+
+            <!-- 第 1 頁對話內容 -->
+            <div class="chat-page active-page" id="chat-page-1">
+                <!-- Cassie的訊息 (左側) -->
+                <div class="chat-row other">
+                    <span class="chat-avatar">🤓</span>
+                    <div class="chat-bubble">
+                        <span class="en-text">I just thought of a great idea! I'll open a sub-account, and whenever I feel like taking a trip, I'll deposit $10 into it!</span>
+                        <span class="zh-text">我想到一個很好的方法，我開一個帳戶，想出門玩的時候就存10塊錢進去！</span>
+                    </div>
+                </div>
+                <div class="chat-row other">
+                    <span class="chat-avatar" style="visibility: hidden;">🤓</span>
+                    <div class="chat-bubble">
+                        <span class="en-text">What do you think?😎</span>
+                        <span class="zh-text">你覺得這個方法怎麼樣？😎</span>
+                    </div>
+                </div>
+
+                <!-- 你的訊息 (右側) -->
+                <div class="chat-row me">
+                    <div class="chat-bubble">
+                        <span class="en-text">I think you'd save up a bunch of money really fast🤣but doing that manually is way too much of a hassle!</span>
+                        <span class="zh-text">我覺得你很快就能存出一筆錢🤣但我覺得這樣太麻煩！</span>
+                    </div>
+                    <span class="chat-avatar">🪨</span>
+                </div>
+
+                <!-- Cassie的訊息 (左側) -->
+                <div class="chat-row other">
+                    <span class="chat-avatar">🤓</span>
+                    <div class="chat-bubble">
+                        <span class="en-text">Fair point...🫠</span>
+                        <span class="zh-text">好像也蠻有道理的⋯🫠</span>
+                    </div>
+                </div>
+
+                <!-- 你的訊息 (右側) -->
+                <div class="chat-row me">
+                    <div class="chat-bubble">
+                        <span class="en-text">Let me figure out a way to make it fun, easy, and sustainable to keep up!</span>
+                        <span class="zh-text">我來想想可以怎麼玩才能方便又長久執行！</span>
+                    </div>
+                    <span class="chat-avatar">🪨</span>
+                </div>
+            </div>
+
+            <!-- 第 2 頁對話內容 -->
+            <div class="chat-page" id="chat-page-2">
+                
+                <!-- 你的訊息 (右側) -->
+                <div class="chat-row me">
+                    <div class="chat-bubble">
+                        <span class="en-text">I built this!✨</span>
+                        <span class="zh-text">我寫了這個！✨</span>
+                    </div>
+                    <span class="chat-avatar">🪨</span>
+                </div>
+                <div class="chat-row me">
+                    <div class="chat-bubble">
+                        <span class="en-text">Whenever you want to travel, just open it and tap +1. Then, at a set time each day, you just deposit the total accumulated amount all at once.</span>
+                        <span class="zh-text">你想出去玩的時候就打開來點一下 +1 ，再固定時間一次把當天的累積的錢存進去就好</span>
+                    </div>
+                    <span class="chat-avatar" style="visibility: hidden;">🪨</span>
+                </div>
+
+                <div class="chat-row me">
+                    <div class="chat-bubble">
+                        <span class="en-text">If you tap enough times, you can even unlock new countries on the map🤎</span>
+                        <span class="zh-text">點到一定次數還能在地圖上解鎖新國家🤎</span>
+                    </div>
+                    <span class="chat-avatar" style="visibility: hidden;">🪨</span>
+                </div>
+
+                <!-- Cassie的訊息 (左側) -->
+                <div class="chat-row other">
+                    <span class="chat-avatar">🤓</span>
+                    <div class="chat-bubble">
+                        <span class="en-text">Great idea!! So when are we going on a trip?😆</span>
+                        <span class="zh-text">好主意!! 那我們什麼時候要出去玩?😆</span>
+                    </div>
+                </div>
+
+            </div>
+
+             <!-- 分頁控制列 -->
+            <div class="chat-pagination">
+                <button class="page-btn prev" id="chat-prev-btn" onclick="changeChatPage(-1)"style="display: none;">❮</button>
+                <div class="page-center" id="chat-page-indicator">1 / 2</div>
+                <button class="page-btn next" id="chat-next-btn" onclick="changeChatPage(1)">❯</button>
+            </div>
+
+            <button class="close-btn" onclick="hideModal('chatModal')">
+                <span class="en-text">Close</span>
+                <span class="zh-text">關閉</span>
+            </button>
+        </div>
+    </div>
+
     <!-- 教學小卡 -->
-    <div class="tutorial-overlay" id="tutorialModal">
-        <div class="tutorial-card">
+    <div class="modal-overlay" id="tutorialModal">
+        <div class="modal-card">
             <h3>
                 <span class="en-text">Set Daily Notification</span>
                 <span class="zh-text">設定每日通知</span>
@@ -495,7 +786,7 @@
             <div class="en-text">
                 <div class="tutorial-step">
                     <strong>1. Shortcuts App</strong>
-                    Open iOS Shortcuts App > "Automation" > "+"".
+                    Open iOS Shortcuts App > "Automation" > "+".
                 </div>
                 <div class="tutorial-step">
                     <strong>2. Time of Day</strong>
@@ -523,7 +814,7 @@
                 </div>
             </div>
 
-            <button class="close-btn" onclick="hideTutorial()">
+            <button class="close-btn" onclick="hideModal('tutorialModal')">
                 <span class="en-text">Got it!</span>
                 <span class="zh-text">了解</span>
             </button>
@@ -542,9 +833,12 @@
         let saveAmount = parseInt(localStorage.getItem('saveAmount')) || 10;
         let unlockThreshold = parseInt(localStorage.getItem('unlockThreshold')) || 30;
 
-        let allCountryIds = []; 
+        let allCountryIds = [];
+        let currentChatPage = 1;
+        const totalChatPages = 2; 
 
         const dailyDisplay = document.getElementById('dailyDisplay');
+        const dailyFundDisplay = document.getElementById('dailyFundDisplay');
         const totalEscapes = document.getElementById('totalEscapes');
         const totalFund = document.getElementById('totalFund');
         const bgColorPicker = document.getElementById('bgColorPicker');
@@ -557,6 +851,7 @@
             dailyDisplay.innerText = dailyCount;
             totalEscapes.innerText = lifetimeCount;
             updateTotalFund();
+            updateDailyFund();
             
             bgColorPicker.value = bgColor;
             textColorPicker.value = textColor;
@@ -605,7 +900,8 @@
             }
             saveAmount = val;
             localStorage.setItem('saveAmount', saveAmount);
-            updateTotalFund(); 
+            updateTotalFund();
+            updateDailyFund(); 
         }
 
         // 解鎖門檻設定邏輯
@@ -627,6 +923,10 @@
             totalFund.innerText = '$' + (lifetimeCount * saveAmount);
         }
 
+        function updateDailyFund() {
+            dailyFundDisplay.innerText = dailyCount * saveAmount;
+        }
+
         // 計數邏輯
         function updateCount(change) {
             if (dailyCount + change >= 0) {
@@ -641,6 +941,7 @@
                 dailyDisplay.innerText = dailyCount;
                 totalEscapes.innerText = lifetimeCount;
                 updateTotalFund();
+                updateDailyFund();
             }
         }
 
@@ -648,12 +949,13 @@
         function resetCount() {
             const msg = (currentLang === 'en') 
                 ? "Did you put the money today?" 
-                : "你今天已經存錢了嗎？";
+                : "你存錢了嗎？";
                 
             if (confirm(msg)) {
                 dailyCount = 0;
                 localStorage.setItem('dailyCount', dailyCount);
                 dailyDisplay.innerText = dailyCount;
+                updateDailyFund();
             }
         }
 
@@ -755,13 +1057,50 @@
             });
         }
 
-        // 教學小卡控制
-        function showTutorial() {
-            document.getElementById('tutorialModal').classList.add('active');
+        // 彈窗開關控制與聊天室翻頁
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
         }
 
-        function hideTutorial() {
-            document.getElementById('tutorialModal').classList.remove('active');
+        function hideModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            
+            // 關閉小卡時重置回第 1 頁
+            if (modalId === 'chatModal') {
+                setTimeout(() => {
+                    currentChatPage = 1;
+                    updateChatPageUI();
+                }, 300);
+            }
+        }
+
+        function changeChatPage(direction) {
+            currentChatPage += direction;
+            if (currentChatPage < 1) currentChatPage = 1;
+            if (currentChatPage > totalChatPages) currentChatPage = totalChatPages;
+            updateChatPageUI();
+        }
+
+        function updateChatPageUI() {
+            // 1. 強制隱藏兩頁，再顯示當前頁面
+            document.getElementById('chat-page-1').classList.remove('active-page');
+            document.getElementById('chat-page-2').classList.remove('active-page');
+            document.getElementById('chat-page-' + currentChatPage).classList.add('active-page');
+            
+            // 2. 更新中央頁碼
+            document.getElementById('chat-page-indicator').innerText = currentChatPage + ' / ' + totalChatPages;
+            
+            // 3. 直接操作 display 屬性，最穩定地顯示/隱藏左右按鈕
+            const prevBtn = document.getElementById('chat-prev-btn');
+            const nextBtn = document.getElementById('chat-next-btn');
+
+            if (currentChatPage === 1) {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'block';
+            } else if (currentChatPage === totalChatPages) {
+                prevBtn.style.display = 'block';
+                nextBtn.style.display = 'none';
+            }
         }
 
         init();
