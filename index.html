@@ -249,7 +249,7 @@
             background: none;
         }
         
-        .lang-select {
+        .lang-select , .number-input{
             background: var(--bg-color);
             color: var(--text-color);
             border: 1px solid var(--text-color);
@@ -259,11 +259,16 @@
             outline: none;
         }
 
+        .number-input {
+            width: 50px;
+            text-align: center;
+        }
+
         .tutorial-btn {
             border: 1px solid var(--text-color);
             background: transparent;
             color: var(--text-color);
-            border-radius: 15px;
+            border-radius: 8px;
             padding: 6px 15px;
             font-size: 0.85rem;
         }
@@ -406,7 +411,28 @@
                         <option value="zh">中文</option>
                     </select>
                 </div>
-                
+
+                <!-- 每次存錢金額設定 -->
+                <div class="setting-row">
+                    <span>
+                        <span class="en-text">Savings per Click</span>
+                        <span class="zh-text">每次存入金額</span>
+                    </span>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <span style="font-size: 0.9rem;">$</span>
+                        <input type="number" id="saveAmountInput" class="number-input" min="1" onchange="updateSaveAmount()">
+                    </div>
+                </div>
+
+                <!-- 解鎖門檻設定 -->
+                <div class="setting-row">
+                    <span>
+                        <span class="en-text">Clicks to Unlock Map</span>
+                        <span class="zh-text">解鎖新國家所需次數</span>
+                    </span>
+                    <input type="number" id="unlockThresholdInput" class="number-input" min="1" onchange="updateUnlockThreshold()">
+                </div>
+
                 <!-- 背景顏色 -->
                 <div class="setting-row">
                     <span>
@@ -513,8 +539,9 @@
         let bgColor = localStorage.getItem('bgColor') || '#2C3E50';
         let textColor = localStorage.getItem('textColor') || '#FFFFFF';
         let currentLang = localStorage.getItem('appLang') || 'en';
+        let saveAmount = parseInt(localStorage.getItem('saveAmount')) || 10;
+        let unlockThreshold = parseInt(localStorage.getItem('unlockThreshold')) || 30;
 
-        const UNLOCK_THRESHOLD = 30; //解鎖新地圖次數
         let allCountryIds = []; 
 
         const dailyDisplay = document.getElementById('dailyDisplay');
@@ -523,15 +550,19 @@
         const bgColorPicker = document.getElementById('bgColorPicker');
         const textColorPicker = document.getElementById('textColorPicker');
         const langSelect = document.getElementById('langSelect');
+        const saveAmountInput = document.getElementById('saveAmountInput');
+        const unlockThresholdInput = document.getElementById('unlockThresholdInput');
 
         function init() {
             dailyDisplay.innerText = dailyCount;
             totalEscapes.innerText = lifetimeCount;
-            totalFund.innerText = '$' + (lifetimeCount * 10);
+            updateTotalFund();
             
             bgColorPicker.value = bgColor;
             textColorPicker.value = textColor;
             langSelect.value = currentLang;
+            saveAmountInput.value = saveAmount;
+            unlockThresholdInput.value = unlockThreshold;
             
             applyColors();
             applyLanguage();
@@ -565,6 +596,37 @@
             document.body.className = currentLang;
         }
 
+        // 金額設定邏輯
+        function updateSaveAmount() {
+            let val = parseInt(saveAmountInput.value);
+            if (isNaN(val) || val < 1) {
+                val = 1; 
+                saveAmountInput.value = val;
+            }
+            saveAmount = val;
+            localStorage.setItem('saveAmount', saveAmount);
+            updateTotalFund(); 
+        }
+
+        // 解鎖門檻設定邏輯
+        function updateUnlockThreshold() {
+            let val = parseInt(unlockThresholdInput.value);
+            if (isNaN(val) || val < 1) {
+                val = 1; 
+                unlockThresholdInput.value = val;
+            }
+            unlockThreshold = val;
+            localStorage.setItem('unlockThreshold', unlockThreshold);
+            
+            // 每次修改門檻時，檢查是否達到解鎖新條件（補發解鎖）
+            checkUnlock(); 
+        }
+
+        // 計算並顯示總金額
+        function updateTotalFund() {
+            totalFund.innerText = '$' + (lifetimeCount * saveAmount);
+        }
+
         // 計數邏輯
         function updateCount(change) {
             if (dailyCount + change >= 0) {
@@ -578,7 +640,7 @@
                 
                 dailyDisplay.innerText = dailyCount;
                 totalEscapes.innerText = lifetimeCount;
-                totalFund.innerText = '$' + (lifetimeCount * 10);
+                updateTotalFund();
             }
         }
 
@@ -627,7 +689,7 @@
             document.documentElement.style.setProperty('--text-color', textColor);
         }
 
-        // 地圖繪製邏輯 (D3.js + TopoJSON)
+        // 地圖繪製邏輯 (D3.js + TopoJSON，Natural Earth 投影法)
         function loadMap() {
             if (d3.select("svg").empty()) {
                 const width = 800;
@@ -666,15 +728,23 @@
         }
 
         function checkUnlock() {
-            const targetUnlocks = Math.floor(lifetimeCount / UNLOCK_THRESHOLD);
-            if (targetUnlocks > unlockedRegions.length && allCountryIds.length > 0) {
+            const targetUnlocks = Math.floor(lifetimeCount / unlockThreshold);
+            let updated = false;
+
+            while (targetUnlocks > unlockedRegions.length && unlockedRegions.length < allCountryIds.length) {
                 const locked = allCountryIds.filter(id => !unlockedRegions.includes(id));
                 if (locked.length > 0) {
                     const randomRegion = locked[Math.floor(Math.random() * locked.length)];
                     unlockedRegions.push(randomRegion);
-                    localStorage.setItem('unlockedRegions', JSON.stringify(unlockedRegions));
-                    renderUnlockedMap();
+                    updated = true;
+                } else {
+                    break;
                 }
+            }
+            
+            if (updated) {
+                localStorage.setItem('unlockedRegions', JSON.stringify(unlockedRegions));
+                renderUnlockedMap();
             }
         }
 
