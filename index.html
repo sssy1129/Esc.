@@ -1069,7 +1069,12 @@
                             const infoDiv = document.getElementById("country-info");
 
                             const baseName = d.properties.name || "Unknown";
-                            const mapData = countryDict[idStr] || { zh: baseName, en: baseName, flag: "🗺️" };
+                            const dictData = countryDict[idStr] || {};
+                            const mapData = {
+                                en: dictData.en || baseName,
+                                zh: dictData.zh || dictData.en || baseName, 
+                                flag: dictData.flag ||"🗺️" 
+                            };
                             
                             if (isUnlocked) {
                                 // 使用 innerHTML 讓 CSS 自動切換中英文
@@ -1122,7 +1127,12 @@
                         baseName = d3Path.datum().properties.name;
                     }
                     
-                    const mapData = countryDict[newlyUnlockedId] || { zh: baseName, en: baseName, flag: "🗺️" };
+                    const dictData = countryDict[newlyUnlockedId] || {};
+                    const mapData = {
+                        en: dictData.en || baseName,
+                        zh: dictData.zh || dictData.en || baseName, 
+                        flag: dictData.flag || "🗺️" 
+                    };
                     
                     document.getElementById('unlockMessage').innerHTML = `
                         <span class="en-text">${mapData.flag} ${mapData.en}</span>
