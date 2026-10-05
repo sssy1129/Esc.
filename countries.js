@@ -205,9 +205,9 @@ const countryDict = {
     "705": { flag: "🇸🇮", en: "Slovenia", zh: "斯洛維尼亞" },
     "090": { flag: "🇸🇧", en: "Solomon Islands", zh: "索羅門群島" },
     "090": { flag: "🇸🇴", en: "Somalia", zh: "索馬利亞" },
-    "710": { flag: "🇿🇦", en: "South Africa", zh: "南非" }
-    "239": { flag: "🇬🇸", en: "South Georgia and the South Sandwich Islands", zh: "南喬治亞和南桑威奇群島" }
-    "728": { flag: "🇸🇸", en: "South Sudan", zh: "南蘇丹" }
+    "710": { flag: "🇿🇦", en: "South Africa", zh: "南非" },
+    "239": { flag: "🇬🇸", en: "South Georgia and the South Sandwich Islands", zh: "南喬治亞和南桑威奇群島" },
+    "728": { flag: "🇸🇸", en: "South Sudan", zh: "南蘇丹" },
     "724": { flag: "🇪🇸", en: "Spain", zh: "西班牙" },
     "144": { flag: "🇱🇰", en: "Sri Lanka", zh: "斯里蘭卡" },
     "729": { flag: "🇸🇩", en: "Sudan", zh: "蘇丹" },
