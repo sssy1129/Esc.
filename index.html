@@ -208,7 +208,7 @@
         }
 
         #country-info {
-            flex-shrink: 0; /* 【關鍵修復】保證這個文字區塊絕對不會被壓縮或消失 */
+            flex-shrink: 0; /* 保證這個文字區塊絕對不會被壓縮或消失 */
             min-height: 24px;
             text-align: center;
             margin-top: 10px;
@@ -850,7 +850,7 @@
                 <span class="en-text">New Destination Unlocked!🎉</span>
                 <span class="zh-text">解鎖新國家！🎉</span>
             </h3>
-            <div id="unlockMessage" style="font-size: 1.5rem; font-weight: bold; margin-bottom: 25px; color: #f1c40f;">
+            <div id="unlockMessage" style="font-size: 1.5rem; font-weight: bold; margin-bottom: 25px; color: var(--text-color);">
                 <!-- 國家名稱與國旗會顯示在這裡 -->
             </div>
             <button class="close-btn" onclick="hideModal('unlockModal')">
