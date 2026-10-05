@@ -912,9 +912,11 @@
 
             // 如果目前已經在地圖頁，又按了一次地圖按鈕，就觸發重置視角動畫！
             if (tabName === 'map' && targetView.classList.contains('active-view')) {
-                if (mapSvg && mapZoom) {
-                    // 使用 750 毫秒的順暢過場動畫，將地圖縮放與平移歸零 (d3.zoomIdentity)
-                    mapSvg.transition().duration(750).call(mapZoom.transform, d3.zoomIdentity);
+                const svg = d3.select("#map-container svg");
+
+                if (!svg.empty() && typeof mapZoom !== 'undefined') {
+                    // 使用 750 毫秒的順暢過場動畫，將地圖縮放與平移強制歸零
+                    svg.transition().duration(750).call(mapZoom.transform, d3.zoomIdentity);
                 }
                 return; // 直接結束，不需要再跑下面的切換畫面邏輯
             }
