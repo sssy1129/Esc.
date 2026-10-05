@@ -202,8 +202,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 20px 0;
+            margin: 10px 0;
             width: 100%;
+            min-height: 0;
+        }
+
+        #country-info {
+            flex-shrink: 0; /* 【關鍵修復】保證這個文字區塊絕對不會被壓縮或消失 */
+            min-height: 24px;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            letter-spacing: 1px;
         }
 
         svg {
@@ -560,7 +571,7 @@
             </div>
             
             <!-- 用來顯示點擊國家名稱的區塊 -->
-            <div id="country-info" style="min-height: 24px; text-align: center; margin-top: 10px; font-size: 1.1rem; font-weight: bold; letter-spacing: 1px;">
+            <div id="country-info">
                 <span class="en-text">Tap the map to explore!</span>
                 <span class="zh-text">點擊地圖探索國家！</span>
             </div>
@@ -862,9 +873,11 @@
         let unlockThreshold = parseInt(localStorage.getItem('unlockThreshold')) || 30;
 
         let allCountryIds = [];
-        let allCountriesInfo = {};
         let currentChatPage = 1;
-        const totalChatPages = 2; 
+        const totalChatPages = 2;
+        
+        let mapSvg;
+        let mapZoom;
 
         const dailyDisplay = document.getElementById('dailyDisplay');
         const dailyFundDisplay = document.getElementById('dailyFundDisplay');
@@ -895,6 +908,17 @@
 
         // 頁籤切換邏輯
         function switchTab(tabName) {
+            const targetView = document.getElementById('view-' + tabName);
+
+            // 如果目前已經在地圖頁，又按了一次地圖按鈕，就觸發重置視角動畫！
+            if (tabName === 'map' && targetView.classList.contains('active-view')) {
+                if (mapSvg && mapZoom) {
+                    // 使用 750 毫秒的順暢過場動畫，將地圖縮放與平移歸零 (d3.zoomIdentity)
+                    mapSvg.transition().duration(750).call(mapZoom.transform, d3.zoomIdentity);
+                }
+                return; // 直接結束，不需要再跑下面的切換畫面邏輯
+            }
+
             // 隱藏所有視圖
             document.querySelectorAll('.view').forEach(view => {
                 view.classList.remove('active-view');
@@ -905,7 +929,7 @@
             });
 
             // 啟用目標視圖與導覽按鈕
-            document.getElementById('view-' + tabName).classList.add('active-view');
+            targetView.classList.add('active-view');
             document.getElementById('tab-' + tabName).classList.add('active');
         }
 
@@ -1032,12 +1056,13 @@
                 const g = svg.append("g");
 
                 // 設定 D3 的縮放與拖曳功能
-                const zoom = d3.zoom()
+                mapZoom = d3.zoom()
                     .scaleExtent([1, 8]) // 限制縮放比例：1倍 到 8倍
+                    .translateExtent([[0, 0], [width, height]])
                     .on("zoom", (event) => {
                         g.attr("transform", event.transform);
                     });
-                svg.call(zoom); // 啟動縮放
+                svg.call(mapZoom); // 啟動縮放
 
                 const projection = d3.geoNaturalEarth1()
                     .scale(width / 4.8)                            
